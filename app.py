@@ -1,11 +1,11 @@
-from flask import Flask, render_template, url_for, request, redirect
+from flask import Flask, render_template, url_for, request, redirect, session
 
 app = Flask(__name__)
+app.secret_key = "mysecretkey"
 
-
-# @app.route("/")
-# def index():
-#     return render_template('index.html')
+@app.route("/")
+def index():
+    return render_template('index.html')
 
 
 @app.route("/login", methods=["POST", "GET"])
@@ -22,12 +22,21 @@ def login():
             "location": location,
             "email": email,
         }
+        session["user"] = user
 
         # validation for password
 
         return render_template("welcome.html", content=user)
     
     return render_template('login.html')   
+
+@app.route("/welcome")
+def welcome():
+    if "user" in session:
+        user = session["user"]
+    else:
+        return redirect(url_for("login"))
+    return render_template('welcome.html')
 
 
 if __name__ == '__main__':
